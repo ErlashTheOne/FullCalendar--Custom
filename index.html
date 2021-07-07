@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='utf-8' />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.8.0/main.min.css">
+    <style>
+        body {
+            min-height: 100vh;
+        }
+        
+        #calendar {
+            max-width: 80%;
+            width: 100%;
+            max-height: 80vh;
+            height: 100%;
+            margin: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div id='calendar'></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.8.0/main.min.js"></script>
+    <script>
+        var calendar;
+        let arrayDeEventos = [{
+            id: '1',
+            title: 'Reserva',
+            start: '2021-07-01',
+            end: '2021-07-02',
+            editable: true,
+        }, {
+            id: '2',
+            title: 'Reserva',
+            start: '2021-07-06',
+            end: '2021-07-07',
+            editable: true,
+        }];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            let calendarEl = document.getElementById('calendar');
+            createCalendar(calendarEl);
+        });
+
+        function createCalendar(calendarEl) {
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: arrayDeEventos,
+                locale: 'es',
+                dateClick: function(info) {
+                    let clickedDate = info.dateStr;
+                    calendar.destroy();
+                    calendar = new FullCalendar.Calendar(calendarEl, {
+                        initialView: 'timeGridDay',
+                        events: arrayDeEventos,
+                        locale: 'es',
+                        editable: true,
+                        initialDate: clickedDate,
+                        customButtons: {
+                            goBack: {
+                                text: 'Atras',
+                                click: function() {
+                                    calendar.destroy();
+                                    createCalendar(calendarEl);
+                                }
+                            }
+                        },
+                        headerToolbar: {
+                            left: 'title',
+                            center: '',
+                            right: 'goBack prev,next'
+                        },
+                        dateClick: function(info) {
+                            if (info.allDay === false) {
+                                let nextDateStr = generateNextDayString(info.date);
+                                addEventToCalendar(info.dateStr, nextDateStr);
+                            } else {
+                                addEventToCalendar(info.dateStr, info.dateStr);
+                            }
+                        }
+                    });
+                    calendar.render();
+                }
+            });
+            calendar.render();
+        }
+
+        function addEventToCalendar(start, end) {
+            calendar.addEvent({
+                title: "Reserva",
+                start: start,
+                end: end
+            })
+        }
+
+        function generateNextDayString(date) {
+            let nextDateDay = new Date();
+            nextDateDay.setTime(date.getTime() + (1 * 60 * 60 * 1000));
+
+            let hour = (nextDateDay.getHours()).toString();
+            if (hour.length === 1) {
+                hour = "0" + hour + ":00:00";
+            } else {
+                hour += ":00:00";
+            }
+
+            let month = (nextDateDay.getMonth() + 1).toString();
+            if (month.length === 1) {
+                month = "0" + month;
+            }
+
+            let day = (nextDateDay.getDate()).toString();
+            if (day.length === 1) {
+                day = "0" + day;
+            }
+
+            let gtm = date.toString();
+            let gtmIndex = gtm.indexOf("GMT");
+            gtm = gtm.substring(gtmIndex + 3, gtmIndex + 8);
+            gtm = gtm.substring(0, 3) + ":" + gtm.substring(3);
+
+            return `${nextDateDay.getFullYear()}-${month}-${day}T${hour}${gtm}`;
+        }
+    </script>
+</body>
+
+</html>
