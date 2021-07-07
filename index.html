@@ -99,29 +99,7 @@
             let nextDateDay = new Date();
             nextDateDay.setTime(date.getTime() + (1 * 60 * 60 * 1000));
 
-            let hour = (nextDateDay.getHours()).toString();
-            if (hour.length === 1) {
-                hour = "0" + hour + ":00:00";
-            } else {
-                hour += ":00:00";
-            }
-
-            let month = (nextDateDay.getMonth() + 1).toString();
-            if (month.length === 1) {
-                month = "0" + month;
-            }
-
-            let day = (nextDateDay.getDate()).toString();
-            if (day.length === 1) {
-                day = "0" + day;
-            }
-
-            let gtm = date.toString();
-            let gtmIndex = gtm.indexOf("GMT");
-            gtm = gtm.substring(gtmIndex + 3, gtmIndex + 8);
-            gtm = gtm.substring(0, 3) + ":" + gtm.substring(3);
-
-            return `${nextDateDay.getFullYear()}-${month}-${day}T${hour}${gtm}`;
+            return nextDateDay.toDateString();
         }
     </script>
 </body>
