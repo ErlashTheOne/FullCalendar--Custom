@@ -57,6 +57,7 @@
                         events: arrayDeEventos,
                         locale: 'es',
                         editable: true,
+                        selectable: true,
                         initialDate: clickedDate,
                         customButtons: {
                             goBack: {
@@ -74,10 +75,16 @@
                         },
                         dateClick: function(info) {
                             if (info.allDay === false) {
-                                let nextDateStr = generateNextDayString(info.date);
+                                let nextDateStr = generateNewDatePlusTime(info.date, 1);
                                 addEventToCalendar(info.dateStr, nextDateStr);
                             } else {
                                 addEventToCalendar(info.dateStr, info.dateStr);
+                            }
+                        },
+                        select: function(info) {
+                            let startDate = generateNewDatePlusTime(info.start, 0.5);
+                            if(startDate.toString() !== info.end.toString() && !info.allDay){
+                                addEventToCalendar(info.startStr, info.endStr);
                             }
                         }
                     });
@@ -95,11 +102,10 @@
             })
         }
 
-        function generateNextDayString(date) {
+        function generateNewDatePlusTime(date, hour) {
             let nextDateDay = new Date();
-            nextDateDay.setTime(date.getTime() + (1 * 60 * 60 * 1000));
-
-            return nextDateDay.toDateString();
+            nextDateDay.setTime(date.getTime() + (hour * 60 * 60 * 1000));
+            return nextDateDay;
         }
     </script>
 </body>
